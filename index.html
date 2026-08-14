@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中文代码教学器 · CodeTutor CN</title>
+<style>
+  :root {
+    --bg: #faf6f0;
+    --card: #ffffff;
+    --ink: #2d2a26;
+    --muted: #8a8378;
+    --line: #ece5da;
+    --accent: #f97316;
+    --accent-dark: #ea580c;
+    --accent-soft: #fff3e6;
+    --ok: #16a34a;
+    --ok-soft: #f0fdf4;
+    --bad: #dc2626;
+    --bad-soft: #fef2f2;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+    line-height: 1.7;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 24px 16px 64px; }
+
+  /* ===== 顶栏 ===== */
+  header.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .logo {
+    width: 42px; height: 42px; border-radius: 12px; background: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+    box-shadow: 0 4px 10px rgba(249,115,22,.25);
+  }
+  h1 { font-size: 21px; margin: 0; }
+  h1 small { display: block; color: var(--muted); font-weight: normal; font-size: 12.5px; }
+  .spacer { flex: 1; }
+
+  label.age-pill {
+    display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--muted);
+    background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 8px 6px 14px;
+  }
+  select#age {
+    font-size: 14px; padding: 6px 10px; border: none; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent-dark); font-weight: 600;
+    cursor: pointer; outline: none; appearance: auto;
+  }
+
+  /* ===== 接口设置 ===== */
+  details.cfg {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 12px 16px; margin-bottom: 16px; font-size: 13.5px;
+  }
+  details.cfg summary { cursor: pointer; color: var(--muted); font-weight: 600; }
+  details.cfg summary:hover { color: var(--accent-dark); }
+  .cfg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .cfg-grid label { display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 12.5px; }
+  .cfg-grid .full { grid-column: 1 / -1; }
+  input[type="text"], input[type="password"] {
+    font-size: 14px; padding: 8px 10px; border: 1px solid var(--line);
+    border-radius: 10px; background: #fff; color: var(--ink);
+  }
+  input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+  #cfg-saved { color: var(--ok); display: none; font-size: 13px; }
+
+  /* ===== 输入区 ===== */
+  .input-card {
+    background: var(--card); border-radius: var(--radius); padding: 16px;
+    box-shadow: 0 2px 12px rgba(120,90,50,.06); margin-bottom: 14px;
+    border: 1px solid var(--line);
+  }
+  textarea#code {
+    width: 100%; min-height: 170px; font-size: 15.5px; line-height: 1.65;
+    font-family: Consolas, "Courier New", monospace;
+    border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px;
+    resize: vertical; color: var(--ink); background: #fdfbf7;
+  }
+  textarea#code:focus { outline: 2px solid var(--accent); border-color: transparent; background: #fff; }
+  .btn-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  button {
+    font-size: 15px; padding: 10px 22px; border: none; border-radius: 10px;
+    cursor: pointer; background: var(--accent); color: #fff; font-weight: 600;
+    transition: background .15s, transform .05s;
+  }
+  button:hover { background: var(--accent-dark); }
+  button:active { transform: translateY(1px); }
+  button:disabled { background: #c9c2b6; cursor: wait; }
+  .btn-sample {
+    background: var(--accent-soft); color: var(--accent-dark); font-weight: 600; font-size: 14px;
+  }
+  .btn-sample:hover { background: #ffe4cc; }
+  .btn-row .hint { color: var(--muted); font-size: 12.5px; margin-left: auto; }
+
+  /* ===== 步骤指示器 ===== */
+  .indicator-wrap { margin-bottom: 14px; }
+  ol.step-indicator {
+    list-style: none; display: flex; gap: 6px; margin: 0; padding: 0;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 10px 12px;
+  }
+  .ind-item {
+    flex: 1; display: flex; align-items: center; gap: 6px; justify-content: center;
+    color: var(--muted); font-size: 13px; padding: 4px 2px; border-radius: 8px;
+    opacity: .55; transition: all .2s;
+  }
+  .ind-num {
+    width: 22px; height: 22px; border-radius: 50%; background: var(--line); color: var(--muted);
+    display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
+  }
+  .ind-item.active { opacity: 1; color: var(--accent-dark); font-weight: 700; background: var(--accent-soft); }
+  .ind-item.active .ind-num { background: var(--accent); color: #fff; }
+  .ind-item.done { opacity: .8; color: var(--ok); }
+  .ind-item.done .ind-num { background: var(--ok); color: #fff; }
+
+  /* ===== 讲解卡片 ===== */
+  #steps .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 16px 20px; margin-bottom: 14px;
+    box-shadow: 0 2px 12px rgba(120,90,50,.05);
+    border-left: 5px solid var(--accent);
+    animation: fadeUp .25s ease-out;
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  #steps h2 { font-size: 15.5px; margin: 0 0 10px; color: var(--accent-dark); }
+  #steps h3 { font-size: 15px; margin: 14px 0 4px; }
+  #steps p { margin: 6px 0; }
+  .overview-text { font-size: 16px; font-weight: 600; }
+  .block { border-top: 1px dashed var(--line); padding: 4px 0 8px; }
+  .block:first-of-type { border-top: none; }
+  .btn-reask, .btn-challenge, .btn-retry {
+    background: var(--accent-soft); color: var(--accent-dark); font-size: 13px; padding: 7px 14px;
+  }
+  .btn-reask:hover, .btn-challenge:hover, .btn-retry:hover { background: #ffe4cc; }
+
+  .terms-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .terms-table th, .terms-table td { text-align: left; padding: 9px 10px; border-bottom: 1px solid #f5f0e8; vertical-align: top; }
+  .terms-table th { color: var(--muted); font-weight: 600; font-size: 13px; }
+  .term-name { color: var(--accent-dark); font-weight: 700; }
+
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+  .quiz-opt {
+    background: #fdfbf7; color: var(--ink); text-align: left; font-size: 14px;
+    border: 1px solid var(--line); border-radius: 10px; padding: 9px 13px; font-weight: 500;
+  }
+  .quiz-opt:hover { border-color: var(--accent); }
+  .quiz-opt.correct { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); font-weight: 700; }
+  .quiz-opt.wrong { background: var(--bad-soft); border-color: var(--bad); color: var(--bad); }
+  .quiz-opt.dim { opacity: .5; }
+  .quiz-answer { background: #fbf8f2; border-radius: 10px; padding: 10px 13px; margin-top: 8px; font-size: 13.5px; }
+  .quiz-answer.hidden { display: none; }
+  .challenge-hint { background: #fffbea; border: 1px solid #fde68a; border-radius: 10px; padding: 10px 13px; margin-top: 10px; }
+  .step-error { border-left-color: var(--bad); }
+  .step-error .hint { color: var(--muted); font-size: 13px; }
+
+  /* ===== 骨架屏 ===== */
+  .skeleton { padding: 8px 2px; }
+  .sk-line {
+    height: 16px; border-radius: 8px; margin: 14px 0;
+    background: linear-gradient(90deg, #f0ece4 25%, #faf7f2 50%, #f0ece4 75%);
+    background-size: 200% 100%; animation: shimmer 1.3s infinite;
+  }
+  .sk-line.w60 { width: 60%; } .sk-line.w80 { width: 80%; } .sk-line.w40 { width: 40%; }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  footer { color: var(--muted); font-size: 12px; text-align: center; margin-top: 30px; line-height: 1.8; }
+
+  @media (max-width: 560px) {
+    .cfg-grid { grid-template-columns: 1fr; }
+    textarea#code { min-height: 210px; font-size: 16px; }
+    button { padding: 13px 0; width: 100%; font-size: 16px; }
+    .btn-reask, .btn-challenge, .btn-retry { width: auto; padding: 8px 14px; }
+    .btn-row { flex-direction: column; align-items: stretch; }
+    .btn-row .hint { margin-left: 0; text-align: center; }
+    h1 { font-size: 18px; }
+    .ind-item { flex-direction: column; gap: 2px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo">📚</div>
+      <h1>中文代码教学器<small>贴一段代码，像老师一样讲给你听</small></h1>
+    </div>
+    <span class="spacer"></span>
+    <label class="age-pill">年龄段
+      <select id="age">
+        <option value="0">幼儿园</option>
+        <option value="1">小学生</option>
+        <option value="2">初中生</option>
+        <option value="3">成人</option>
+      </select>
+    </label>
+  </header>
+
+  <details class="cfg">
+    <summary>⚙ 接口设置（OpenAI 兼容 API，用户自备 key；key 仅存本机浏览器）</summary>
+    <div class="cfg-grid">
+      <label>API 地址
+        <input type="text" id="cfg-base" placeholder="https://api.deepseek.com/v1/chat/completions">
+      </label>
+      <label>模型
+        <input type="text" id="cfg-model" placeholder="deepseek-chat">
+      </label>
+      <label class="full">API Key（留空 = 使用本地代理 server.py 的环境变量 key）
+        <input type="password" id="cfg-key" placeholder="sk-...">
+      </label>
+      <button type="button" id="btn-save-config" style="width:auto;">保存配置</button>
+      <span id="cfg-saved">✓ 已保存</span>
+    </div>
+  </details>
+
+  <div class="input-card">
+    <textarea id="code" placeholder="把代码粘贴到这里，点击『开始讲解』"></textarea>
+    <div class="btn-row">
+      <button type="button" class="btn-sample" id="btn-sample">✨ 填入示例</button>
+      <button id="btn-go">开始讲解</button>
+      <span class="hint">快捷键 Ctrl+Enter</span>
+    </div>
+  </div>
+
+  <div class="indicator-wrap" id="step-indicator"></div>
+  <div id="steps"></div>
+
+  <footer>
+    中文代码教学器 · 纯本地工具：你粘贴的代码只在本机浏览器内存中处理，不会上传到除你配置的 API 端点以外的任何地方。<br>
+    讲解由 AI 生成，如有疑义请向真人老师确认。学习进度仅保存在本机浏览器（localStorage，不存代码）。
+  </footer>
+</div>
+
+<script src="prompts.js"></script>
+<script src="storage.js"></script>
+<script src="llm.js"></script>
+<script src="state.js"></script>
+<script src="ui.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    CodeTutor.ui.init();
+  });
+</script>
+</body>
+</html>

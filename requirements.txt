@@ -1,0 +1,3 @@
+# 纯 Python 标准库实现（http.server / urllib），无第三方依赖。
+# 前端零框架零依赖；测试需要 pytest（可选）
+pytest>=8

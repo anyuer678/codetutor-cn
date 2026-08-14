@@ -1,0 +1,14 @@
+[project]
+name = "codetutor-cn"
+version = "1.0.0"
+description = "中文代码教学器：贴代码像老师一样逐步讲解，支持年龄分级与练习。纯静态前端 + 可选本地转发 server，零第三方依赖。"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []  # 纯标准库（http.server / urllib）
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
