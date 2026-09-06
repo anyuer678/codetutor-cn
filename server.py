@@ -10,6 +10,7 @@
 """
 import json
 import os
+from urllib.parse import urlparse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.request import Request, urlopen
 
@@ -26,7 +27,12 @@ class Handler(BaseHTTPRequestHandler):
         pass
 
     def _cors(self):
-        self.send_header("Access-Control-Allow-Origin", "*")
+        # 页面与本服务同源，本不需要 CORS；仅放行本机来源的 Origin，
+        # 防止任意网页借本机代理烧你的 LLM key（原来对所有人开放 *）
+        origin = self.headers.get("Origin") or ""
+        host = urlparse(origin).hostname if origin else ""
+        if host in ("127.0.0.1", "localhost", "::1"):
+            self.send_header("Access-Control-Allow-Origin", origin)
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.send_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 
